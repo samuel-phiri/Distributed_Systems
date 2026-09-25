@@ -66,6 +66,21 @@ public class ChatHandler implements HttpHandler {
                 }
                 sendResponse(exchange, 200, "{\"status\":\"OK\"}");
 
+            } else if ("POST".equals(method) && "/api/score".equals(path)) {
+                if (mutex == null) {
+                    sendResponse(exchange, 501, "{\"error\":\"Mutex not implemented yet\"}");
+                } else {
+                    mutex.requestCriticalSection();
+                    sendResponse(exchange, 200, "{\"status\":\"Score update requested\"}");
+                }
+
+            } else if ("GET".equals(method) && "/api/scoreboard".equals(path)) {
+                if (mutex == null) {
+                    sendResponse(exchange, 501, "{\"error\":\"Mutex not implemented yet\"}");
+                } else {
+                    sendResponse(exchange, 200, mutex.getScoreboard().toString());
+                }
+
             } else if ("GET".equals(method) && "/api/health".equals(path)) {
                 sendResponse(exchange, 200, "{\"status\":\"ALIVE\"}");
 

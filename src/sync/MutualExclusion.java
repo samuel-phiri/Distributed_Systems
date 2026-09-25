@@ -17,6 +17,9 @@ public class MutualExclusion {
 
     // Simple shared scoreboard state — replace/extend as needed
     private final java.util.Map<String, Integer> scoreboard = new java.util.concurrent.ConcurrentHashMap<>();
+    public java.util.Map<String, Integer> getScoreboard() {
+    return scoreboard;
+}
 
     public MutualExclusion(int nodeId, List<Integer> ringOrder, boolean startsWithToken) {
         this.nodeId = nodeId;
@@ -25,9 +28,15 @@ public class MutualExclusion {
     }
 
     /** Called externally when this node wants to update the scoreboard. */
-    public synchronized void requestCriticalSection() {
+       public synchronized void requestCriticalSection() {
         this.wantsToUpdateScore = true;
         System.out.println("[Node " + nodeId + "] Requested critical section access.");
+
+        if (hasToken) {
+            enterCriticalSection();
+            wantsToUpdateScore = false;
+            passToken();
+        }
     }
 
     /** Called when this node receives the token over HTTP. */
